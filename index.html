@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>图片切换和二维码生成</title>
+    <style>
+        /* 添加样式，使用类名代替ID */
+        .image-container {
+            position: relative; /* 添加相对定位 */
+            width: 200px; /* 设置图片容器的宽度 */
+            height: 200px; /* 设置图片容器的高度 */
+            overflow: hidden; /* 裁剪图片以适应容器 */
+        }
+
+        .image-container img {
+            width: 100%; /* 图片宽度占满容器 */
+            height: 100%; /* 图片高度占满容器 */
+            cursor: pointer; /* 添加光标样式，表示可以点击 */
+        }
+
+        /* 添加样式，设置输入框的位置 */
+        .info {
+            position: absolute; /* 使用绝对定位 */
+            bottom: 10px; /* 距离底部的距离 */
+            left: 10px; /* 距离左侧的距离 */
+            width: 80%; /* 输入框的宽度 */
+        }
+    </style>
+</head>
+<body>
+    <h1>图片切换和二维码生成</h1>
+
+    <!-- 图片容器 -->
+    <div class="image-container" id="imageContainer1">
+        <a href="image1.jpg" target="_blank"> <!-- 点击图片将在新窗口打开放大的图片 -->
+            <img src="image1.jpg" alt="图片1">
+        </a>
+        <input type="text" class="info" placeholder="请输入图片1的信息">
+    </div>
+
+    <div class="image-container" id="imageContainer2">
+        <a href="image2.jpg" target="_blank"> <!-- 点击图片将在新窗口打开放大的图片 -->
+            <img src="image2.jpg" alt="图片2">
+        </a>
+        <input type="text" class="info" placeholder="请输入图片2的信息">
+    </div>
+
+    <div class="image-container" id="imageContainer3">
+        <a href="image3.jpg" target="_blank"> <!-- 点击图片将在新窗口打开放大的图片 -->
+            <img src="image3.jpg" alt="图片3">
+        </a>
+        <input type="text" class="info" placeholder="请输入图片3的信息">
+    </div>
+
+    <!-- 切换按钮 -->
+    <button onclick="prevImage()">上一张</button>
+    <button onclick="nextImage()">下一张</button>
+
+    <!-- 生成二维码按钮 -->
+    <button onclick="generateQRCode()">生成二维码</button>
+
+    <!-- 显示生成的二维码 -->
+    <div id="qrcode"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+    <script>
+        var images = ["image1.jpg", "image2.jpg", "image3.jpg"];
+        var currentImageIndex = 0;
+
+        function nextImage() {
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            displayCurrentImage();
+        }
+
+        function prevImage() {
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            displayCurrentImage();
+        }
+
+        function displayCurrentImage() {
+            var imageContainers = document.querySelectorAll(".image-container");
+            for (var i = 0; i < images.length; i++) {
+                if (i === currentImageIndex) {
+                    imageContainers[i].style.display = "block";
+                } else {
+                    imageContainers[i].style.display = "none";
+                }
+            }
+        }
+
+        function generateQRCode() {
+            // 收集所有图像输入框的信息并合并到一个文本字符串中
+            var allInfo = "";
+            var infoInputs = document.querySelectorAll(".info");
+            infoInputs.forEach(function(input) {
+                allInfo += input.value + "\n";
+            });
+
+            // 创建QRCode对象
+            var qr = qrcode(10, 'L');
+            qr.addData(allInfo);
+            qr.make();
+
+            // 获取生成的二维码图像的DataURL
+            var dataURL = qr.createDataURL();
+
+            // 显示生成的二维码
+            var qrcodeDiv = document.getElementById("qrcode");
+            qrcodeDiv.innerHTML = '<img src="' + dataURL + '">';
+        }
+
+        // 初始化页面显示
+        displayCurrentImage();
+    </script>
+</body>
+</html>
